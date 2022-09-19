@@ -1,0 +1,62 @@
+[
+  {
+    "name": "👀 Review Needed",
+    "color": "83BDEC",
+    "description": "리뷰 필요"
+  },
+  {
+    "name": "🚀 Deploy",
+    "color": "04A8F0",
+    "description": "배포"
+  },
+  {
+    "name": "📝 Documents",
+    "color": "1D76DB",
+    "description": "문서 작업"
+  },
+  {
+    "name": "💄 UI",
+    "color": "80DFEA",
+    "description": "레이아웃 추가(UI)"
+  },
+  {
+    "name": "✨ Feature",
+    "color": "FFE55F",
+    "description": "기능 추가"
+  },
+  {
+    "name": "🐛 Bug",
+    "color": "8CD842",
+    "description": "버그 수정"
+  },
+  {
+    "name": "🎨 Modify",
+    "color": "FF7181",
+    "description": "코드 수정"
+  },
+  {
+    "name": "🔥 Remove",
+    "color": "FF9E43",
+    "description": "코드 삭제"
+  },
+  {
+    "name": "🔨 Refactor",
+    "color": "77E756",
+    "description": "코드 리팩토링"
+  },
+  {
+    "name": "🧑‍🎨 Style",
+    "color": "9ED447",
+    "description": "코드 스타일"
+  },
+  {
+    "name": "🏗 Structure",
+    "color": "FFE55F",
+    "description": "프로젝트 구조"
+  },
+  {
+    "name": "✅ Test",
+    "color": "00DA48",
+    "description": "테스트"
+  }
+]
