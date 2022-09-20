@@ -1,12 +1,18 @@
 const userDao = require('../models/user_dao');
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
-
+const { SECRET_KEY } = process.env;
 
 const signUpService = async (email, password, name, phone) => {
 
-  await userDao.getUserByEmail(email);
+  const user = await userDao.getUserByEmail(email);
   await userDao.getUserByPhone(phone); // 폰 인증번호 전송은 후순위
+
+  if(user) {
+    const error = new Error("USER_EXIST")
+    error.statusCode = 400
+    throw error;
+  }
 
   const salt = bcrypt.genSaltSync(12);
   const hashedPw = bcrypt.hashSync(password, salt);
@@ -29,12 +35,12 @@ const logInService = async (email, password) => {
       throw error;
     } else if (isPasswordCorrect) {
       const token = jwt.sign({ userEmail: userEmailPw.email }, SECRET_KEY, {
-        expiresIn: '1d' });
+        expiresIn: '1h' });
   
-    //   const user = {};
-    //   user["account"] = userIdPw["account"]
-    //   user["token"] = token
-    //   return user;
+      const user = {};
+      user["name"] = userEmailPw["name"]
+      user["token"] = token
+      return user;
     }
 }
 

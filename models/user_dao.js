@@ -2,16 +2,10 @@ const myDataSource = require('./init');
 
 const getUserByEmail = async email => {
   const [queryRes] = await myDataSource.query(
-    `SELECT id, email, password FROM users WHERE email = ?`,
+    `SELECT id, email, password, name FROM users WHERE email = ?`,
     [email]
   );
-  if(queryRes) {
-    const error = new Error("USER_EXIST")
-    error.statusCode = 400
-    throw error;
-  } else {
   return queryRes;
-  }
 };
 
 const getUserByPhone = async phone => {
