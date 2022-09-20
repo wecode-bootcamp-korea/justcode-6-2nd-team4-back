@@ -1,7 +1,17 @@
 const userDao = require('../models/user_dao');
-const jsonwebtoken = require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 
+
+const signUpService = async (email, password, name, phone) => {
+
+  await userDao.getUserByEmail(email);
+  await userDao.getUserByPhone(phone); // 폰 인증번호 전송은 후순위
+
+  const salt = bcrypt.genSaltSync(12);
+  const hashedPw = bcrypt.hashSync(password, salt);
+  return await userDao.createUser(email, hashedPw, name, phone)
+}
 
 const logInService = async (email, password) => {
     const userEmailPw = await userDao.getUserByEmail(email);
@@ -19,15 +29,13 @@ const logInService = async (email, password) => {
       throw error;
     } else if (isPasswordCorrect) {
       const token = jwt.sign({ userEmail: userEmailPw.email }, SECRET_KEY, {
-        expiresIn: '1d',
-      });
+        expiresIn: '1d' });
   
     //   const user = {};
     //   user["account"] = userIdPw["account"]
     //   user["token"] = token
     //   return user;
     }
-  
 }
 
-module.exports = { logInService }
+module.exports = { signUpService, logInService }
