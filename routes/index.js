@@ -8,9 +8,4 @@ router.get('/ping', (_, res) => { res.send('pong') });
 
 router.use('/users', userRouter);
 
-// 디자인 마켓
-router.use('', productRouter)
-// 맞춤 제작소
-router.use('/custom-shop', productRouter);
-
 module.exports = router;
