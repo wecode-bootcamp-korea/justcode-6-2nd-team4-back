@@ -28,7 +28,7 @@ const logInController = async (req, res) => {
 
   try{
     const resData = await userService.logInService(id, pw)
-    res.status(201).json({ message: "LOGIN_SUCCESS", data: resData })
+    res.status(201).json( resData )
   } catch (error) {
     console.log(error);
     res.status( error.statusCode || 500 ).json({ error: error.message })    
