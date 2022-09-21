@@ -3,7 +3,7 @@ const userService = require('../services/user_service');
 
 const signUpController = async (req, res) => {
   const { email, password, name, phone } = req.body;
-  // keyError
+
   if (!(email && password && name && phone)) {
     res.status(400).json({ error: 'INPUT_ERROR' });
     return;
