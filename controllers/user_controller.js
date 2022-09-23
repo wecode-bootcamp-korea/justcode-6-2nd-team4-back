@@ -2,15 +2,15 @@ const userService = require('../services/user_service');
 
 
 const signUpController = async (req, res) => {
-  const { email, password, name, phone } = req.body;
+  const { email, pwd, name, phone } = req.body;
 
-  if (!(email && password && name && phone)) {
+  if (!(email && pwd && name && phone)) {
     res.status(400).json({ error: 'INPUT_ERROR' });
     return;
   }
 
   try {
-    await userService.signUpService(email, password, name, phone );
+    await userService.signUpService(email, pwd, name, phone );
     res.status(201).json({ message: 'USER_CREATED' });
   } catch (error) {
     console.log(error);
@@ -19,15 +19,15 @@ const signUpController = async (req, res) => {
 }
 
 const logInController = async (req, res) => {
-  const { id, pw } = req.body;
+  const { email, pwd } = req.body;
 
-  if(!(id && pw)) {
+  if(!(email && pwd)) {
     res.status(400).json({ error: "INPUT_ERROR"})
     return;
   }
 
   try{
-    const resData = await userService.logInService(id, pw)
+    const resData = await userService.logInService(email, pwd)
     res.status(201).json( resData )
   } catch (error) {
     console.log(error);
