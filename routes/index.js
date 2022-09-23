@@ -8,4 +8,7 @@ router.get('/ping', (_, res) => { res.send('pong') });
 
 router.use('/users', userRouter);
 
+// 디자인 마켓
+router.use('', productRouter);
+
 module.exports = router;
