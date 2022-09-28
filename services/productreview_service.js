@@ -5,10 +5,6 @@ const getProductReviews = async (pk) => {
   return result;
 }
 
-const getProductId = async (pk) => {
-  return await productReviewDao.getProductId(pk)
-}
-
 const createProductReviews = async (user_id, product_id, rate, review_content) => {
 
   const check = await productReviewDao.checkOrder(user_id, product_id)
@@ -22,4 +18,5 @@ const createProductReviews = async (user_id, product_id, rate, review_content) =
   }
 }
 
-module.exports = { getProductReviews, createProductReviews, getProductId }
+
+module.exports = { getProductReviews, createProductReviews }

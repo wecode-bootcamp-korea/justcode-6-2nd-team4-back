@@ -13,21 +13,13 @@ const getProductReviews = async (req, res) => {
   }
 };
 
-const getProductId = async (req, res) => {
-  const amam = req.body;
-  console.log(amam.product_id)
-  return;
-}
-
-console.log("s", getProductId.amam)
-
 const createProductReviews = async (req, res) => {
   const user_id = req.params.user_id
+  const pk = req.parms.pk
   const { review_content } = req.body
-  console.log("s", getProductId)
-  //console.log(amam.product_id)
+
   try {
-    await productReviewDao.createProductReviews(user_id, review_content)
+    await productReviewDao.createProductReviews(user_id, pk, review_content)
     return res.status(201).json({ message: 'success createReview' })
   }
   catch (err) {
@@ -36,4 +28,4 @@ const createProductReviews = async (req, res) => {
   }
 };
 
-module.exports = { getProductReviews, getProductId, createProductReviews }
+module.exports = { getProductReviews, createProductReviews }
