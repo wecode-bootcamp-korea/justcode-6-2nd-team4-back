@@ -5,8 +5,7 @@ const router = express.Router()
 
 // 디자인 마켓
 router.get('/',productController.mainPageList)
-router.get('/themeCategory/:id',productController.categoryPageList)
-router.get('/themeCategory/:id/sort',productController.sortProductList)
+router.get('/themeCategory/:id/sort',productController.productList)
 
 
 module.exports = router;

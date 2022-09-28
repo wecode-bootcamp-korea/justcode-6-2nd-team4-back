@@ -1,3 +1,4 @@
+const { SimpleConsoleLogger } = require('typeorm');
 const cartDao = require('../models/cart_dao')
 
 const insertProductToCart = async (user_id, product_id, delivery_fee, order_options) => {
@@ -5,10 +6,13 @@ const insertProductToCart = async (user_id, product_id, delivery_fee, order_opti
   const cartOptionArray = []; // 기존 장바구니의 option
 
   order_options.map((order) => {optionArray.push(order.option)})
+  console.log("order option : ", order_options)
   const isCartExisted = await cartDao.getCartByUserProductId(user_id, product_id)
+  console.log("cart exist? : ", isCartExisted)
   isCartExisted.map((cart) => { cartOptionArray.push(cart.options) })
 
   const isOptionExisted = optionArray.filter(option => cartOptionArray.includes(option))
+  console.log("같은 옵션? : ", isOptionExisted)
   if(isOptionExisted.length === 0) {
     delivery_fee = parseFloat(delivery_fee/1000).toFixed(3)
     order_options.map(async (order) => {
@@ -21,7 +25,6 @@ const insertProductToCart = async (user_id, product_id, delivery_fee, order_opti
     const quantity = []; // input의 option별 quantity (option을 기준으로 값을 가져옴)
     const price = [];
 
-    isOptionExisted.filter(option => {cartOptionArray.includes(option)})
     for(let i = 0; i < isOptionExisted.length; i++) {
       const cartId = await cartDao.getCartIdByOptions(isOptionExisted[i])
       id.push(cartId.cart_id)
@@ -35,6 +38,17 @@ const insertProductToCart = async (user_id, product_id, delivery_fee, order_opti
     price[j] = parseFloat(price[j]/1000).toFixed(3)
     await cartDao.updateQuantity(id, quantity[j], price[j])
     })
+
+    if(isOptionExisted.length !== optionArray.length) {
+      const nonExistedCart = optionArray.filter(option => !cartOptionArray.includes(option))
+      delivery_fee = parseFloat(delivery_fee/1000).toFixed(3)
+      
+      nonExistedCart.map( async order => {
+        const index = optionArray.indexOf(order);
+        order_options[index].price = parseFloat(order_options[index].price/1000).toFixed(3)
+        await cartDao.createCart(user_id, product_id, order_options[index].quantity, order_options[index].option, order_options[index].price, delivery_fee)
+      })
+    }
 }}
 
 

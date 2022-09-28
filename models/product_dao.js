@@ -91,7 +91,7 @@ const getProductListByLiked = async () => {
   return queryRes;
 }
 
-const getProductListByCategory = async (category_id, offset) => {
+const getProductListByCategory = async (category_id, orderBy, offset) => {
   const queryRes = myDataSource.query(`
   SELECT 
 	(SELECT COUNT(id) FROM products p WHERE p.category_id = ? + 7) as total_count,
@@ -129,7 +129,7 @@ const getProductListByCategory = async (category_id, offset) => {
   JOIN sellers s
   ON p.seller_id = s.id
   WHERE p.category_id = ? + 7
-  ORDER BY p_l.count DESC
+  ${orderBy}
   LIMIT 0, ?`, [category_id, category_id, (offset + 1) * 8])
   return queryRes;
 }

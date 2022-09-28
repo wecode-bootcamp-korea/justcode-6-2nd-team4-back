@@ -88,7 +88,6 @@ const getCartByCartId = async (cart_id) => {
 }
 
 const updateQuantity = async (cart_id, newQuantity, newPrice) => {
-  console.log(newPrice)
   await myDataSource.query(`
   UPDATE cart_order SET product_quantity = 
   (SELECT alias.product_quantity + ?
