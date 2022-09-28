@@ -11,11 +11,11 @@ const mainPageList = async (req, res) => {
   }
 }
 
-const categoryPageList = async (req, res) => {
+const productList = async (req, res) => {
   const category_id = req.params.id
-  const { page } = req.body
+  const { offset, sort } = req.query
   try{
-    const dataList = await productService.productListByCategory(category_id, page);
+    const dataList = await productService.productListByOrder(category_id, sort, offset);
     res.status(200).json({ data: dataList })
   } catch (error) {
     console.log(error)
@@ -23,18 +23,4 @@ const categoryPageList = async (req, res) => {
   }
 }
 
-
-const sortProductList = async (req, res) => {
-  const category_id = req.params.id
-  const { sort } = req.query
-  const { page } = req.body
-  try{
-    const dataList = await productService.productListByOrder(category_id, sort, page);
-    res.status(200).json({ data: dataList })
-  } catch (error) {
-    console.log(error)
-    res.status(error.statusCode || 500).json({ error: error.message })
-  }
-}
-
-module.exports = { mainPageList, categoryPageList, sortProductList }
+module.exports = { mainPageList, productList }
