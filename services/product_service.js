@@ -7,30 +7,19 @@ const mainProductList = async () => {
   return list;
 }
 
-const productListByCategory = async (category_id, page) => {
-  const totalCount = await productDao.getTotalCountOfProductByCategory(category_id)
-  const list = await productDao.getProductListByCategory(category_id, page)
-  const res = [
-    ...totalCount,
-    ...list
-  ]
-  return res;
+const productListByCategory = async (category_id, offset) => {
+  offset = Number(offset)
+  return await productDao.getProductListByCategory(category_id, offset);
 }
 
-const productListByOrder = async (category_id, sort, page) => {
+const productListByOrder = async (category_id, sort, offset) => {
   if(sort === "popular") orderBy = "ORDER BY p_l.count DESC"
     else if(sort === "volume") orderBy = "ORDER BY p.sales_volume DESC"
     else if(sort === "created") orderBy = "ORDER BY p.created_at"
-    else if(sort === "priceAesc") orderBy = "ORDER BY p.origin_price"
-    else if(sort === "priceDesc") orderBy = "ORDER BY p.origin_price DESC"
+    else if(sort === "priceAesc") orderBy = "ORDER BY for_ORDER"
+    else if(sort === "priceDesc") orderBy = "ORDER BY for_ORDER DESC"
 
-  const totalCount = await productDao.getTotalCountOfProductByCategory(category_id)
-  const list = await productDao.getProductListByOrder(category_id, orderBy, page)
-  const res = [
-    ...totalCount,
-    ...list
-  ]
-  return res;
+  return await productDao.getProductListByOrder(category_id, orderBy, offset)
 }
 
 module.exports = { mainProductList, productListByCategory, productListByOrder }

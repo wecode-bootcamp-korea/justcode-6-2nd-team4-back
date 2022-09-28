@@ -6,7 +6,7 @@ const { SECRET_KEY } = process.env;
 const signUpService = async (email, password, name, phone) => {
 
   const user = await userDao.getUserByEmail(email);
-  await userDao.getUserByPhone(phone); // 폰 인증번호 전송은 후순위
+  await userDao.getUserByPhone(phone);
 
   if(user) {
     const error = new Error("USER_EXIST")
@@ -37,6 +37,7 @@ const logInService = async (email, password) => {
     const token = jwt.sign({ userEmail: userEmailPw.email }, SECRET_KEY);
     //  {  expiresIn: '1h' }
     const user = {};
+    user["id"] = userEmailPw["id"]
     user["name"] = userEmailPw["name"]
     user["token"] = token
     return user;

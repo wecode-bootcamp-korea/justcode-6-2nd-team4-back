@@ -24,7 +24,7 @@ const getProductListInMonth = async () => {
     END as price,
     s.name as shop,
     CASE
-      WHEN s.delivery_fee IS null AND s.delivery_condition IS null
+      WHEN s.delivery_condition = '무료배송'
       THEN null
       ELSE 1
     END as delivery_type,
@@ -43,7 +43,7 @@ const getProductListInMonth = async () => {
   ON p.seller_id = s.id
   WHERE p.created_at BETWEEN DATE_ADD(NOW(), INTERVAL -1 MONTH ) AND NOW()
   ORDER BY p.created_at
-  LIMIT 16;
+  LIMIT 16
   `)
 
   return queryRes;
@@ -62,7 +62,7 @@ const getProductListByLiked = async () => {
       ELSE FORMAT(FLOOR((1-(p.sale_rate * 0.01)) * p.origin_price)*1000, 0)
     END as price,
     s.name as shop,CASE
-    WHEN s.delivery_fee IS null AND s.delivery_condition IS null
+    WHEN s.delivery_condition = '무료배송'
       THEN null
       ELSE 1
     END as delivery_type,
@@ -85,15 +85,16 @@ const getProductListByLiked = async () => {
   JOIN sellers s
   ON p.seller_id = s.id
   ORDER BY p_l.count DESC
-  LIMIT 16;
+  LIMIT 16
   `)
 
   return queryRes;
 }
 
-const getProductListByCategory = async (category_id, page) => {
+const getProductListByCategory = async (category_id, offset) => {
   const queryRes = myDataSource.query(`
   SELECT 
+	(SELECT COUNT(id) FROM products p WHERE p.category_id = ? + 7) as total_count,
     p.id as product_id,
     p.name as product_name,
     p.thumbnail_image as image,
@@ -105,7 +106,7 @@ const getProductListByCategory = async (category_id, page) => {
     END as price,
     s.name as shop,
     CASE
-      WHEN s.delivery_fee IS null AND s.delivery_condition IS null
+      WHEN s.delivery_condition = '무료배송'
       THEN null
       ELSE 1
     END as delivery_type,
@@ -129,28 +130,33 @@ const getProductListByCategory = async (category_id, page) => {
   ON p.seller_id = s.id
   WHERE p.category_id = ? + 7
   ORDER BY p_l.count DESC
-  LIMIT ?, 8;
-  `, [category_id, (page - 1) * 8])
+  LIMIT 0, ?`, [category_id, category_id, (offset + 1) * 8])
   return queryRes;
 }
 
-
-const getProductListByOrder = async (category_id, orderBy, page) => {
-  console.log("orderby : ", orderBy)
+const getProductListByOrder = async (category_id, orderBy, offset) => {
   const queryRes = await myDataSource.query(`
   SELECT 
+    (SELECT COUNT(id) FROM products p WHERE p.category_id = ? + 7) as total_count,
     p.id as product_id,
     p.name as product_name,
     p.thumbnail_image as image,
     CONCAT(p.sale_rate, "%") as sale_rate,
-    CASE
+    CAST(
+    (CASE
       WHEN p.sale_rate IS null 
       THEN REPLACE(p.origin_price, '.', ',')
       ELSE FORMAT(FLOOR((1-(p.sale_rate * 0.01)) * p.origin_price)*1000, 0)
-    END as price,
+    END) AS DECIMAL(6, 3)) AS for_ORDER,
+    REPLACE(
+    (CASE
+      WHEN p.sale_rate IS null 
+      THEN REPLACE(p.origin_price, '.', ',')
+      ELSE FORMAT(FLOOR((1-(p.sale_rate * 0.01)) * p.origin_price)*1000, 0)
+    END),'.', ',') AS price,
     s.name as shop,
     CASE
-      WHEN s.delivery_fee IS null AND s.delivery_condition IS null
+      WHEN s.delivery_condition = '무료배송' 
       THEN null
       ELSE 1
     END as delivery_type,
@@ -174,8 +180,8 @@ const getProductListByOrder = async (category_id, orderBy, page) => {
   ON p.seller_id = s.id
   WHERE p.category_id = ? + 7
   ${orderBy}
-  LIMIT ?, 8;
-  `, [category_id, (page - 1) * 8])
+  LIMIT 0, ?
+  `, [category_id, category_id, (offset + 1) * 8])
   return queryRes;
 }
 
