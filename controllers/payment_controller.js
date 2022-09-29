@@ -1,10 +1,10 @@
 const paymentServices = require('../services/payment_service');
 
 const createOrder = async (req, res) => {
-  const pk = req.params.pk;
-
+  const { id } = req.foundUser;
   try {
-    const a = await paymentServices.createOrder(pk)
+    await paymentServices.createOrder(id)
+    await paymentServices.deleteCart(id)
     return res.status(201).json({ message: '구매가 완료 되었습니다.' })
   }
   catch (err) {

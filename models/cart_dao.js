@@ -30,16 +30,16 @@ const getCartByUserId = async (user_id) => {
     "options", c.product_options,
     "quantity", c.product_quantity,
     "image", p.thumbnail_image,
-    "product_price", p.origin_price * 1000,
-    "price", c.order_price * 1000,
-    "delivery_fee", c.delivery_fee * 1000,
+    "product_price", p.origin_price,
+    "price", c.order_price,
+    "delivery_fee", c.delivery_fee,
     "name", p.name,
     "period", s.production_period,
     "allPrice", 
     CASE
       WHEN c.delivery_fee IS not null
-      THEN (c.order_price + c.delivery_fee) * 1000
-      ELSE c.order_price * 1000
+      THEN (c.order_price + c.delivery_fee)
+      ELSE c.order_price
     END,
     "shop", s.name
     )) as cart
@@ -54,10 +54,10 @@ const getCartByUserId = async (user_id) => {
   return queryRes;
 }
 
-const getCartIdByOptions = async (option) => {
+const getCartIdByOptions = async (user_id, product_id, option) => {
   const[queryRes] = await myDataSource.query(`
-  select id as cart_id from cart_order where product_options = ?
-  `, [option])
+  SELECT id AS cart_id FROM cart_order WHERE product_options = ? AND user_id = ? AND product_id = ?
+  `, [option, user_id, product_id])
   return queryRes;
 }
 
@@ -67,13 +67,13 @@ const getCartByCartId = async (cart_id) => {
   SELECT c.product_quantity,
   FORMAT(CASE
     WHEN p.sale_rate IS null
-	  THEN REPLACE(p.origin_price,'.',',') * 1000 * c.product_quantity
-	  ELSE FLOOR((1 - p.sale_rate * 0.01) * p.origin_price) * 1000 * c.product_quantity
+	  THEN p.origin_price * c.product_quantity
+	  ELSE FLOOR((1 - p.sale_rate * 0.01) * p.origin_price) * c.product_quantity
   END, 0) AS price,
   CASE 
     WHEN (CASE
       WHEN p.sale_rate IS null
-	    THEN REPLACE(p.origin_price,'.',',') * 1000 * c.product_quantity
+	    THEN p.origin_price * c.product_quantity
 	    ELSE FLOOR((1 - p.sale_rate * 0.01) * p.origin_price) * 1000 * c.product_quantity
       END) >= s.delivery_condition
     THEN null

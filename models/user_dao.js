@@ -25,11 +25,22 @@ const getUserByPhone = async phone => {
 };
 
 
-const createUser = async (email, hashedPw, name, phone ) => {
+const createUser = async (email, hashedPw, name, phone) => {
   return await myDataSource.query(`
   INSERT INTO users (email, password, name, phone) 
-  VALUES (?, ?, ?, ?)`
+  VALUES (?, ?, ?, ?)
+  `
   ,[email, hashedPw, name, phone])
 }
 
-module.exports = { getUserByEmail, getUserByPhone, createUser }
+const createAdress = async (name, address, detailed_address) => {
+  const [user_id] = await myDataSource.query(`
+  SELECT id FROM users ORDER BY created_at DESC limit 1;
+  `)
+  return await myDataSource.query(`
+  INSERT INTO address (user_id, receiver_name, address, detailed_address)
+  VALUES (?, ?, ?, ?);
+  `, [user_id.id, name, address, detailed_address])
+}
+
+module.exports = { getUserByEmail, getUserByPhone, createUser, createAdress }

@@ -7,6 +7,7 @@ const mainProductList = async () => {
   return list;
 }
 
+// 카테고리별 메인 상품 리스트 포함
 const productListByOrder = async (category_id, sort, offset) => {
   offset = Number(offset)
   if(sort === "main") orderBy = "ORDER BY p_l.count DESC"

@@ -1,14 +1,13 @@
 const myPageServices = require('../services/mypage_service');
 
 const getUserMyPage = async (req, res) => {
-  const pk = req.params.pk;
+  const { id } = req.foundUser;
 
   try {
-    const profile = await myPageServices.getUserProfile(pk)
-    const info = await myPageServices.getUserInfo(pk);
+    const profile = await myPageServices.getUserProfile(id)
+    const info = await myPageServices.getUserInfo(id);
     return res.status(201).json({ profile, info })
   }
-
   catch (err) {
     console.log(err)
     res.status(err.status || 500).json({ message: err.message });
@@ -16,10 +15,10 @@ const getUserMyPage = async (req, res) => {
 };
 
 const getUserOrder = async (req, res) => {
-  const pk = req.params.pk;
-
+  const { id } = req.foundUser;
+  
   try {
-    const order = await myPageServices.getUserOrder(pk)
+    const order = await myPageServices.getUserOrder(id)
     return res.status(201).json({ order })
   }
   catch (err) {
@@ -29,10 +28,10 @@ const getUserOrder = async (req, res) => {
 }
 
 const getUserLikeList = async (req, res) => {
-  const pk = req.params.pk;
+  const { id } = req.foundUser;
 
   try {
-    const LikeList = await myPageServices.getUserLikeList(pk)
+    const LikeList = await myPageServices.getUserLikeList(id)
     return res.status(201).json({ LikeList })
   }
   catch (err) {

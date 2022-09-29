@@ -1,7 +1,11 @@
 const paymentDao = require('../models/payment_dao');
 
-const createOrder = async (pk) => {
-  return await paymentDao.createOrder(pk);
+const createOrder = async (user_id) => {
+  return await paymentDao.createOrder(user_id);
 }
 
-module.exports = { createOrder }
+const deleteCart = async(user_id) => {
+  return await paymentDao.deleteCart(user_id);
+}
+
+module.exports = { createOrder, deleteCart }

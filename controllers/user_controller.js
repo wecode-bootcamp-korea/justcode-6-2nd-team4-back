@@ -3,6 +3,7 @@ const userService = require('../services/user_service');
 
 const signUpController = async (req, res) => {
   const { email, pwd, name, phone } = req.body;
+  const { address, detailed_address } = req.body;
 
   if (!(email && pwd && name && phone)) {
     res.status(400).json({ error: 'INPUT_ERROR' });
@@ -10,7 +11,7 @@ const signUpController = async (req, res) => {
   }
 
   try {
-    await userService.signUpService(email, pwd, name, phone );
+    await userService.signUpService(email, pwd, name, phone, address, detailed_address );
     res.status(201).json({ message: 'USER_CREATED' });
   } catch (error) {
     console.log(error);

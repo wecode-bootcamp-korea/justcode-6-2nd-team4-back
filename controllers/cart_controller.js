@@ -3,9 +3,10 @@ const cartService = require('../services/cart_service')
 const createCart = async (req, res) => {
   const { id } = req.foundUser;
   const { productId, deliveryFee, options } = req.body;
+  console.log("oaption : ", options)
   try{
     await cartService.insertProductToCart(id, productId, deliveryFee, options);
-    res.status(200).json({ message: "CART_CREATED" })
+    res.status(200).json({ message: "장바구니에 담겼습니다." })
   } catch (error) {
     console.log(error)
     res.status( error.statusCode || 500 ).json({ error: error.message })
