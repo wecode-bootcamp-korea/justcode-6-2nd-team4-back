@@ -1,19 +1,19 @@
 const myPageDao = require('../models/mypage_dao');
 
-const getUserProfile = async (pk) => {
-  return await myPageDao.getUserProfile(pk);
+const getUserProfile = async (user_id) => {
+  return await myPageDao.getUserProfile(user_id);
 }
 
-const getUserInfo = async (pk) => {
-  return await myPageDao.getUserInfo(pk);
+const getUserInfo = async (user_id) => {
+  return await myPageDao.getUserInfo(user_id);
 }
 
-const getUserOrder = async (pk) => {
-  return await myPageDao.getUserOrder(pk);
+const getUserOrder = async (user_id) => {
+  return await myPageDao.getUserOrder(user_id);
 }
 
-const getUserLikeList = async (pk) => {
-  return await myPageDao.getUserLikeList(pk);
+const getUserLikeList = async (user_id) => {
+  return await myPageDao.getUserLikeList(user_id);
 }
 
 

@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const { SECRET_KEY } = process.env;
 
-const signUpService = async (email, password, name, phone) => {
+const signUpService = async (email, password, name, phone, address, detailed_address) => {
 
   const user = await userDao.getUserByEmail(email);
   await userDao.getUserByPhone(phone);
@@ -16,13 +16,15 @@ const signUpService = async (email, password, name, phone) => {
 
   const salt = bcrypt.genSaltSync(12);
   const hashedPw = bcrypt.hashSync(password, salt);
-  return await userDao.createUser(email, hashedPw, name, phone)
+  await userDao.createUser(email, hashedPw, name, phone)
+  await userDao.createAdress(name, address, detailed_address)
+  return;
 }
 
 const logInService = async (email, password) => {
   const userEmailPw = await userDao.getUserByEmail(email);
   if (!userEmailPw) {
-    const error = new Error('USER_NOT_EXISTE');
+    const error = new Error('USER_NOT_EXIST');
     error.statusCode = 400;
     throw error;
   }
@@ -37,7 +39,6 @@ const logInService = async (email, password) => {
     const token = jwt.sign({ userEmail: userEmailPw.email }, SECRET_KEY);
     //  {  expiresIn: '1h' }
     const user = {};
-    user["id"] = userEmailPw["id"]
     user["name"] = userEmailPw["name"]
     user["token"] = token
     return user;

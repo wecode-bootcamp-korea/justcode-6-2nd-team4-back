@@ -1,8 +1,7 @@
 const productReviewDao = require('../models/productreview_dao');
 
-const getProductReviews = async (pk) => {
-  const result = await productReviewDao.getProductReviews(pk);
-  return result;
+const getProductReviews = async (product_id) => {
+  return await productReviewDao.getProductReviews(product_id);
 }
 
 const createProductReviews = async (user_id, product_id, rate, review_content) => {

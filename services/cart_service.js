@@ -1,4 +1,3 @@
-const { SimpleConsoleLogger } = require('typeorm');
 const cartDao = require('../models/cart_dao')
 
 const insertProductToCart = async (user_id, product_id, delivery_fee, order_options) => {
@@ -6,18 +5,15 @@ const insertProductToCart = async (user_id, product_id, delivery_fee, order_opti
   const cartOptionArray = []; // 기존 장바구니의 option
 
   order_options.map((order) => {optionArray.push(order.option)})
-  console.log("order option : ", order_options)
   const isCartExisted = await cartDao.getCartByUserProductId(user_id, product_id)
-  console.log("cart exist? : ", isCartExisted)
   isCartExisted.map((cart) => { cartOptionArray.push(cart.options) })
-
   const isOptionExisted = optionArray.filter(option => cartOptionArray.includes(option))
-  console.log("같은 옵션? : ", isOptionExisted)
+  
   if(isOptionExisted.length === 0) {
-    delivery_fee = parseFloat(delivery_fee/1000).toFixed(3)
+    // delivery_fee = parseFloat(delivery_fee/1000).toFixed(3)
     order_options.map(async (order) => {
       // order_price, delivery_fee >> decimal 형식으로
-      order.price = parseFloat(order.price/1000).toFixed(3)
+      // order.price = parseFloat(order.price/1000).toFixed(3)
       await cartDao.createCart(user_id, product_id, order.quantity, order.option, order.price, delivery_fee)
     })
   } else if(isOptionExisted) {
@@ -26,17 +22,18 @@ const insertProductToCart = async (user_id, product_id, delivery_fee, order_opti
     const price = [];
 
     for(let i = 0; i < isOptionExisted.length; i++) {
-      const cartId = await cartDao.getCartIdByOptions(isOptionExisted[i])
+      const cartId = await cartDao.getCartIdByOptions(user_id, product_id, isOptionExisted[i])
       id.push(cartId.cart_id)
       for(let j in order_options) {
         if(order_options[j].option === isOptionExisted[i]) {
           quantity.push(order_options[j].quantity)
           price.push(order_options[j].price)
+          console.log(quantity, price)
         } }
     }
     id.map(async (id, j) => {
-    price[j] = parseFloat(price[j]/1000).toFixed(3)
-    await cartDao.updateQuantity(id, quantity[j], price[j])
+      // price[j] = parseFloat(price[j]/1000).toFixed(3)
+      await cartDao.updateQuantity(id, quantity[j], price[j])
     })
 
     if(isOptionExisted.length !== optionArray.length) {
@@ -45,7 +42,7 @@ const insertProductToCart = async (user_id, product_id, delivery_fee, order_opti
       
       nonExistedCart.map( async order => {
         const index = optionArray.indexOf(order);
-        order_options[index].price = parseFloat(order_options[index].price/1000).toFixed(3)
+        // order_options[index].price = parseFloat(order_options[index].price/1000).toFixed(3)
         await cartDao.createCart(user_id, product_id, order_options[index].quantity, order_options[index].option, order_options[index].price, delivery_fee)
       })
     }
@@ -54,8 +51,17 @@ const insertProductToCart = async (user_id, product_id, delivery_fee, order_opti
 
 const readProductInCart = async (user_id) => {
   const cartList = await cartDao.getCartByUserId(user_id)
-  cartList['cart'] = JSON.parse(cartList['cart'])
-  return cartList;
+  const array = {};
+  if(cartList === undefined) {
+    array["cart"] = []
+    return array;
+  } else {
+    array["cart"] = JSON.parse(cartList['cart'])
+    array["cart"].map((cart) => {
+    cart["is_checked"] = false
+    })
+    return array;
+  }
 }
 
 const updateCart = async (cart_id, newQuantity, newPrice) => {

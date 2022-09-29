@@ -3,7 +3,7 @@ const myDataSource = require('./init');
 const getTotalCountOfProductByCategory = async (category_id) => {
   const queryRes = await myDataSource.query(`
   SELECT
-    count(p.id) as total_count
+    COUNT(p.id) AS total_count
   FROM products p
   WHERE p.category_id = ? + 7
   `, [category_id])
@@ -13,29 +13,29 @@ const getTotalCountOfProductByCategory = async (category_id) => {
 const getProductListInMonth = async () => {
   const queryRes = await myDataSource.query(`
   SELECT 
-    p.id as product_id,
-    p.name as product_name,
-    p.thumbnail_image as image,
-    CONCAT(p.sale_rate, "%") as sale_rate,
+    p.id AS product_id,
+    p.name AS product_name,
+    p.thumbnail_image AS image,
+    CONCAT(p.sale_rate, "%") AS sale_rate,
     CASE
       WHEN p.sale_rate IS null 
       THEN REPLACE(p.origin_price, '.', ',')
-      ELSE FORMAT(FLOOR((1-(p.sale_rate * 0.01)) * p.origin_price)*1000, 0)
-    END as price,
-    s.name as shop,
+      ELSE FORMAT(FLOOR((1-(p.sale_rate * 0.01)) * p.origin_price), 0)
+    END AS price,
+    s.name AS shop,
     CASE
       WHEN s.delivery_condition = '무료배송'
       THEN null
       ELSE 1
-    END as delivery_type,
-    c.name as category,
+    END AS delivery_type,
+    c.name AS category,
     r.average,
     r.review_count
   FROM products p
   LEFT JOIN 
-    (SELECT product_id, TRUNCATE(AVG(rate), 1) as average, COUNT(id) as review_count 
+    (SELECT product_id, TRUNCATE(AVG(rate), 1) AS average, COUNT(id) AS review_count 
     FROM reviews
-    GROUP BY product_id) as r
+    GROUP BY product_id) AS r
   ON p.id = r.product_id
   JOIN category c
   ON p.category_id = c.id
@@ -52,33 +52,34 @@ const getProductListInMonth = async () => {
 const getProductListByLiked = async () => {
   const queryRes = await myDataSource.query(`
   SELECT 
-    p.id as product_id,
-    p.name as product_name,
-    p.thumbnail_image as image,
-    CONCAT(p.sale_rate, "%") as sale_rate,
+    p.id AS product_id,
+    p.name AS product_name,
+    p.thumbnail_image AS image,
+    CONCAT(p.sale_rate, "%") AS sale_rate,
     CASE
       WHEN p.sale_rate IS null 
-      THEN REPLACE(p.origin_price, '.', ',')
-      ELSE FORMAT(FLOOR((1-(p.sale_rate * 0.01)) * p.origin_price)*1000, 0)
-    END as price,
-    s.name as shop,CASE
-    WHEN s.delivery_condition = '무료배송'
+      THEN FORMAT(p.origin_price, 0)
+      ELSE FORMAT(FLOOR((1-(p.sale_rate * 0.01)) * p.origin_price), 0)
+    END AS price,
+    s.name AS shop,
+    CASE
+      WHEN s.delivery_condition = '무료배송'
       THEN null
       ELSE 1
-    END as delivery_type,
-    c.name as category,
+    END AS delivery_type,
+    c.name AS category,
     r.average,
     r.review_count
   FROM products p
   LEFT JOIN 
-    (SELECT product_id, TRUNCATE(AVG(rate), 1) as average, COUNT(id) as review_count
+    (SELECT product_id, TRUNCATE(AVG(rate), 1) AS average, COUNT(id) AS review_count
     FROM reviews
-    GROUP BY product_id) as r
+    GROUP BY product_id) AS r
   ON p.id = r.product_id
   LEFT JOIN
-    (SELECT product_id, COUNT(product_id) as count
+    (SELECT product_id, COUNT(product_id) AS count
     FROM product_liked
-    GROUP BY product_id) as p_l
+    GROUP BY product_id) AS p_l
   ON p.id = p_l.product_id
   JOIN category c
   ON p.category_id = c.id
@@ -94,35 +95,35 @@ const getProductListByLiked = async () => {
 const getProductListByCategory = async (category_id, orderBy, offset) => {
   const queryRes = myDataSource.query(`
   SELECT 
-	(SELECT COUNT(id) FROM products p WHERE p.category_id = ? + 7) as total_count,
-    p.id as product_id,
-    p.name as product_name,
-    p.thumbnail_image as image,
-    CONCAT(p.sale_rate, "%") as sale_rate,
+	(SELECT COUNT(id) FROM products p WHERE p.category_id = ? + 7) AS total_count,
+    p.id AS product_id,
+    p.name AS product_name,
+    p.thumbnail_image AS image,
+    CONCAT(p.sale_rate, "%") AS sale_rate,
     CASE
       WHEN p.sale_rate IS null 
-      THEN REPLACE(p.origin_price, '.', ',')
-      ELSE FORMAT(FLOOR((1-(p.sale_rate * 0.01)) * p.origin_price)*1000, 0)
-    END as price,
-    s.name as shop,
+      THEN FORMAT(p.origin_price, 0)
+      ELSE FORMAT(FLOOR((1-(p.sale_rate * 0.01)) * p.origin_price), 0)
+    END AS price,
+    s.name AS shop,
     CASE
       WHEN s.delivery_condition = '무료배송'
       THEN null
       ELSE 1
-    END as delivery_type,
-    c.name as category,
+    END AS delivery_type,
+    c.name AS category,
     r.average,
     r.review_count
   FROM products p
   LEFT JOIN 
-    (SELECT product_id, TRUNCATE(AVG(rate), 1) as average, COUNT(id) as review_count
+    (SELECT product_id, TRUNCATE(AVG(rate), 1) AS average, COUNT(id) AS review_count
     FROM reviews
-    GROUP BY product_id) as r
+    GROUP BY product_id) AS r
   ON p.id = r.product_id
   LEFT JOIN
-    (SELECT product_id, COUNT(product_id) as count
+    (SELECT product_id, COUNT(product_id) AS count
     FROM product_liked
-    GROUP BY product_id) as p_l
+    GROUP BY product_id) AS p_l
   ON p.id = p_l.product_id
   JOIN category c
   ON p.category_id = c.id
@@ -137,42 +138,42 @@ const getProductListByCategory = async (category_id, orderBy, offset) => {
 const getProductListByOrder = async (category_id, orderBy, offset) => {
   const queryRes = await myDataSource.query(`
   SELECT 
-    (SELECT COUNT(id) FROM products p WHERE p.category_id = ? + 7) as total_count,
-    p.id as product_id,
-    p.name as product_name,
-    p.thumbnail_image as image,
-    CONCAT(p.sale_rate, "%") as sale_rate,
+    (SELECT COUNT(id) FROM products p WHERE p.category_id = ? + 7) AS total_count,
+    p.id AS product_id,
+    p.name AS product_name,
+    p.thumbnail_image AS image,
+    CONCAT(p.sale_rate, "%") AS sale_rate,
     CAST(
     (CASE
       WHEN p.sale_rate IS null 
-      THEN REPLACE(p.origin_price, '.', ',')
-      ELSE FORMAT(FLOOR((1-(p.sale_rate * 0.01)) * p.origin_price)*1000, 0)
+      THEN FORMAT(p.origin_price, 0)
+      ELSE FORMAT(FLOOR((1-(p.sale_rate * 0.01)) * p.origin_price), 0)
     END) AS DECIMAL(6, 3)) AS for_ORDER,
     REPLACE(
     (CASE
       WHEN p.sale_rate IS null 
-      THEN REPLACE(p.origin_price, '.', ',')
-      ELSE FORMAT(FLOOR((1-(p.sale_rate * 0.01)) * p.origin_price)*1000, 0)
+      THEN FORMAT(p.origin_price, 0)
+      ELSE FORMAT(FLOOR((1-(p.sale_rate * 0.01)) * p.origin_price), 0)
     END),'.', ',') AS price,
-    s.name as shop,
+    s.name AS shop,
     CASE
       WHEN s.delivery_condition = '무료배송' 
       THEN null
       ELSE 1
-    END as delivery_type,
-    c.name as category,
+    END AS delivery_type,
+    c.name AS category,
     r.average,
     r.review_count
   FROM products p
   LEFT JOIN 
-    (SELECT product_id, TRUNCATE(AVG(rate), 1) as average, COUNT(id) as review_count
+    (SELECT product_id, TRUNCATE(AVG(rate), 1) AS average, COUNT(id) AS review_count
     FROM reviews
-    GROUP BY product_id) as r
+    GROUP BY product_id) AS r
   ON p.id = r.product_id
   LEFT JOIN
-    (SELECT product_id, COUNT(product_id) as count
+    (SELECT product_id, COUNT(product_id) AS count
     FROM product_liked
-    GROUP BY product_id) as p_l
+    GROUP BY product_id) AS p_l
   ON p.id = p_l.product_id
   JOIN category c
   ON p.category_id = c.id

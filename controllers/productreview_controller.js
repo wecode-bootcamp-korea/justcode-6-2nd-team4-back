@@ -1,10 +1,10 @@
-const { isPrimitive } = require('util');
 const productReviewDao = require('../services/productreview_service');
 
 const getProductReviews = async (req, res) => {
-  const pk = req.params.pk;
+  const product_id = req.params.pk;
+
   try {
-    const getReviews = await productReviewDao.getProductReviews(pk)
+    const getReviews = await productReviewDao.getProductReviews(product_id)
     return res.status(201).json({ getReviews })
   }
   catch (err) {
@@ -14,12 +14,13 @@ const getProductReviews = async (req, res) => {
 };
 
 const createProductReviews = async (req, res) => {
-  const user_id = req.params.user_id
-  const pk = req.parms.pk
-  const { review_content } = req.body
+  const { id } = req.foundUser;
+  const { rate, review_content } = req.body
+  const product_id = req.params.pk
 
+  console.log("key : ", id, product_id, rate, review_content)
   try {
-    await productReviewDao.createProductReviews(user_id, pk, review_content)
+    await productReviewDao.createProductReviews(id, product_id, rate, review_content)
     return res.status(201).json({ message: 'success createReview' })
   }
   catch (err) {
